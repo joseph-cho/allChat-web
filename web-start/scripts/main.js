@@ -82,6 +82,7 @@ allChat.prototype.loadMessages = function() {
 // Saves a new message on the Firebase DB.
 allChat.prototype.saveMessage = function(e) {
   e.preventDefault();
+  var mi = this.messageInput
   // Check that the user entered a message and is signed in.
   if (this.messageInput.value && this.checkSignedInWithMessage()) {
 
@@ -93,7 +94,7 @@ allChat.prototype.saveMessage = function(e) {
       photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
     }).then(function() {
       // Clear message text field and SEND button state.
-      allChat.resetMaterialTextfield(this.messageInput);
+      allChat.resetMaterialTextfield(mi);
       this.toggleButton();
     }.bind(this)).catch(function(error) {
       console.error('Error writing new message to Firebase Database', error);
@@ -248,7 +249,7 @@ allChat.prototype.requestNotificationsPermissions = function() {
 };
 
 // Resets the given MaterialTextField.
-allChat.resetMaterialTextfield = function(element) {
+allChat.prototype.resetMaterialTextfield = function(element) {
   element.value = '';
   element.parentNode.MaterialTextfield.boundUpdateClassesHandler();
 };
@@ -270,14 +271,7 @@ allChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
   // If an element for that message does not exists yet we create it.
   if (!div) {
     var container = document.createElement('div');
-    console.log('container:');
-    console.log(container);
-
-    //container.innerHTML = allChat.MESSAGE_TEMPLATE;
     container.innerHTML = MESSAGE_TEMPLATE;
-    console.log('container.innerHTML:');
-    console.log(container.innerHTML);
-
     div = container.firstChild;
     div.setAttribute('id', key);
     this.messageList.appendChild(div);
