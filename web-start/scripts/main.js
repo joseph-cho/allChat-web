@@ -15,8 +15,8 @@
  */
 'use strict';
 
-// Initializes FriendlyChat.
-function FriendlyChat() {
+// Initializes allChat.
+function allChat() {
   this.checkSetup();
 
   // Shortcuts to DOM Elements.
@@ -54,7 +54,7 @@ function FriendlyChat() {
 }
 
 // Sets up shortcuts to Firebase features and initiate firebase auth.
-FriendlyChat.prototype.initFirebase = function() {
+allChat.prototype.initFirebase = function() {
   // Shortcuts to Firebase SDK features.
   this.auth = firebase.auth();
   this.database = firebase.database();
@@ -64,7 +64,7 @@ FriendlyChat.prototype.initFirebase = function() {
 };
 
 // Loads chat messages history and listens for upcoming ones.
-FriendlyChat.prototype.loadMessages = function() {
+allChat.prototype.loadMessages = function() {
   // Reference to the /messages/ database path.
   this.messagesRef = this.database.ref('messages');
   // Make sure we remove all previous listeners.
@@ -80,7 +80,7 @@ FriendlyChat.prototype.loadMessages = function() {
 };
 
 // Saves a new message on the Firebase DB.
-FriendlyChat.prototype.saveMessage = function(e) {
+allChat.prototype.saveMessage = function(e) {
   e.preventDefault();
   // Check that the user entered a message and is signed in.
   if (this.messageInput.value && this.checkSignedInWithMessage()) {
@@ -93,7 +93,7 @@ FriendlyChat.prototype.saveMessage = function(e) {
       photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
     }).then(function() {
       // Clear message text field and SEND button state.
-      FriendlyChat.resetMaterialTextfield(this.messageInput);
+      allChat.resetMaterialTextfield(this.messageInput);
       this.toggleButton();
     }.bind(this)).catch(function(error) {
       console.error('Error writing new message to Firebase Database', error);
@@ -103,10 +103,10 @@ FriendlyChat.prototype.saveMessage = function(e) {
 };
 
 // Sets the URL of the given img element with the URL of the image stored in Cloud Storage.
-FriendlyChat.prototype.setImageUrl = function(imageUri, imgElement) {
+allChat.prototype.setImageUrl = function(imageUri, imgElement) {
   //If the image is a Cloud Storage URI we fetch the URL
   if (imageUri.startsWith('gs://')) {
-    imgElement.src = FriendlyChat.LOADING_IMAGE_URL; //Display a laoding image first
+    imgElement.src = allChat.LOADING_IMAGE_URL; //Display a laoding image first
     this.storage.refFromURL(imageUri).getMetadata().then(function(metadata) {
       imgElement.src = metadata.downloadURLs[0];
     });
@@ -117,7 +117,7 @@ FriendlyChat.prototype.setImageUrl = function(imageUri, imgElement) {
 
 // Saves a new message containing an image URI in Firebase.
 // This first saves the image in Firebase storage.
-FriendlyChat.prototype.saveImageMessage = function(event) {
+allChat.prototype.saveImageMessage = function(event) {
   event.preventDefault();
   var file = event.target.files[0];
 
@@ -139,7 +139,7 @@ FriendlyChat.prototype.saveImageMessage = function(event) {
     var currentUser = this.auth.currentUser;
     this.messagesRef.push({
       name: currentUser.displayName,
-      imageUrl: FriendlyChat.LOADING_IMAGE_URL,
+      imageUrl: allChat.LOADING_IMAGE_URL,
       photoUrl: currentUser.photoUrl || '/images/profile_placeholder.png'
     }).then(function(data) {
       //Upload the image to cloud storage
@@ -157,20 +157,20 @@ FriendlyChat.prototype.saveImageMessage = function(event) {
 };
 
 // Signs-in Friendly Chat.
-FriendlyChat.prototype.signIn = function() {
+allChat.prototype.signIn = function() {
   // Sign in Firebase using popup auth and Google as the identity provider.
   var provider = new firebase.auth.GoogleAuthProvider();
   this.auth.signInWithPopup(provider);
 };
 
 // Signs-out of Friendly Chat.
-FriendlyChat.prototype.signOut = function() {
+allChat.prototype.signOut = function() {
   // Sign out of Firebase.
   this.auth.signOut();
 };
 
 // Triggers when the auth state change for instance when the user signs-in or signs-out.
-FriendlyChat.prototype.onAuthStateChanged = function(user) {
+allChat.prototype.onAuthStateChanged = function(user) {
   if (user) { // User is signed in!
     // Get profile pic and user's name from the Firebase user object.
     var profilePicUrl = user.photoURL;
@@ -205,7 +205,7 @@ FriendlyChat.prototype.onAuthStateChanged = function(user) {
 };
 
 // Returns true if user is signed-in. Otherwise false and displays a message.
-FriendlyChat.prototype.checkSignedInWithMessage = function() {
+allChat.prototype.checkSignedInWithMessage = function() {
   // Return true if the user is signed in Firebase
   if (this.auth.currentUser) {
     return true;
@@ -221,7 +221,7 @@ FriendlyChat.prototype.checkSignedInWithMessage = function() {
 };
 
 // Saves the messaging device token to the datastore.
-FriendlyChat.prototype.saveMessagingDeviceToken = function() {
+allChat.prototype.saveMessagingDeviceToken = function() {
   firebase.messaging().getToken().then(function(currentToken) {
     if(currentToken) {
       console.log('Got FCM device token:', currentToken);
@@ -237,7 +237,7 @@ FriendlyChat.prototype.saveMessagingDeviceToken = function() {
 };
 
 // Requests permissions to show notifications.
-FriendlyChat.prototype.requestNotificationsPermissions = function() {
+allChat.prototype.requestNotificationsPermissions = function() {
   console.log('Requesting notifications permission...');
   firebase.messaging().requestPermission().then(function() {
     //notification permission granted
@@ -248,13 +248,13 @@ FriendlyChat.prototype.requestNotificationsPermissions = function() {
 };
 
 // Resets the given MaterialTextField.
-FriendlyChat.resetMaterialTextfield = function(element) {
+allChat.resetMaterialTextfield = function(element) {
   element.value = '';
   element.parentNode.MaterialTextfield.boundUpdateClassesHandler();
 };
 
 // Template for messages.
-FriendlyChat.MESSAGE_TEMPLATE =
+var MESSAGE_TEMPLATE =
     '<div class="message-container">' +
       '<div class="spacing"><div class="pic"></div></div>' +
       '<div class="message"></div>' +
@@ -262,15 +262,22 @@ FriendlyChat.MESSAGE_TEMPLATE =
     '</div>';
 
 // A loading image URL.
-FriendlyChat.LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif';
+allChat.LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif';
 
 // Displays a Message in the UI.
-FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
+allChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
   var div = document.getElementById(key);
   // If an element for that message does not exists yet we create it.
   if (!div) {
     var container = document.createElement('div');
-    container.innerHTML = FriendlyChat.MESSAGE_TEMPLATE;
+    console.log('container:');
+    console.log(container);
+
+    //container.innerHTML = allChat.MESSAGE_TEMPLATE;
+    container.innerHTML = MESSAGE_TEMPLATE;
+    console.log('container.innerHTML:');
+    console.log(container.innerHTML);
+
     div = container.firstChild;
     div.setAttribute('id', key);
     this.messageList.appendChild(div);
@@ -301,7 +308,7 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
 
 // Enables or disables the submit button depending on the values of the input
 // fields.
-FriendlyChat.prototype.toggleButton = function() {
+allChat.prototype.toggleButton = function() {
   if (this.messageInput.value) {
     this.submitButton.removeAttribute('disabled');
   } else {
@@ -310,7 +317,7 @@ FriendlyChat.prototype.toggleButton = function() {
 };
 
 // Checks that the Firebase SDK has been correctly setup and configured.
-FriendlyChat.prototype.checkSetup = function() {
+allChat.prototype.checkSetup = function() {
   if (!window.firebase || !(firebase.app instanceof Function) || !firebase.app().options) {
     window.alert('You have not configured and imported the Firebase SDK. ' +
         'Make sure you go through the codelab setup instructions and make ' +
@@ -319,5 +326,5 @@ FriendlyChat.prototype.checkSetup = function() {
 };
 
 window.addEventListener('load' , function() {
-  window.friendlyChat = new FriendlyChat();
+  window.allChat = new allChat();
 });
