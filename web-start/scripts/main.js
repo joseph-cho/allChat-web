@@ -32,6 +32,7 @@ function allChat() {
   this.signInButton = document.getElementById('sign-in');
   this.signOutButton = document.getElementById('sign-out');
   this.signInSnackbar = document.getElementById('must-signin-snackbar');
+  this.languagesSelect = document.getElementById('language-select');
 
   // Saves message on form submit.
   this.messageForm.addEventListener('submit', this.saveMessage.bind(this));
@@ -42,6 +43,9 @@ function allChat() {
   var buttonTogglingHandler = this.toggleButton.bind(this);
   this.messageInput.addEventListener('keyup', buttonTogglingHandler);
   this.messageInput.addEventListener('change', buttonTogglingHandler);
+
+  // Indicates user's languages pref
+  this.languagesSelect.addEventListener('change', this.changeLanguage.bind(this));
 
   // Events for image upload.
   this.submitImageButton.addEventListener('click', function(e) {
@@ -299,6 +303,11 @@ allChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
   this.messageList.scrollTop = this.messageList.scrollHeight;
   this.messageInput.focus();
 };
+
+// TODO: will eventually translate depending on user's language selection
+allChat.prototype.changeLanguage = function() {
+  console.log("language changed to: " +  this.languagesSelect.value);
+}
 
 // Enables or disables the submit button depending on the values of the input
 // fields.

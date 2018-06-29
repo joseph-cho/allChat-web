@@ -47,3 +47,44 @@
     at Command._action (/usr/local/lib/node_modules/firebase-tools/commands/serve.js:48:12)
 [error] 
 [error] Error: An unexpected error has occurred.
+[debug] [2018-06-29T03:35:58.574Z] ----------------------------------------------------------------------
+[debug] [2018-06-29T03:35:58.576Z] Command:       /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] [2018-06-29T03:35:58.576Z] CLI Version:   3.19.1
+[debug] [2018-06-29T03:35:58.576Z] Platform:      darwin
+[debug] [2018-06-29T03:35:58.576Z] Node Version:  v8.11.3
+[debug] [2018-06-29T03:35:58.577Z] Time:          Thu Jun 28 2018 23:35:58 GMT-0400 (EDT)
+[debug] [2018-06-29T03:35:58.577Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-06-29T03:35:58.586Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-06-29T03:35:58.587Z] > authorizing via signed-in user
+[debug] [2018-06-29T03:35:58.588Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/friendlychat-31829  
+  
+ Thu Jun 28 2018 23:35:58 GMT-0400 (EDT)
+[debug] [2018-06-29T03:35:59.333Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-29T03:35:59.333Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/friendlychat-31829/tokens  
+  
+ Thu Jun 28 2018 23:35:59 GMT-0400 (EDT)
+[debug] [2018-06-29T03:36:00.149Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-29T03:36:00.149Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/friendlychat-31829  
+  
+ Thu Jun 28 2018 23:36:00 GMT-0400 (EDT)
+[debug] [2018-06-29T03:36:00.661Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/Users/josephcho/Documents/allChat-web/web-start'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-06-29T03:36:01.110Z] Fetching environment
+[debug] [2018-06-29T03:36:01.112Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/976951531853:getServerAppConfig  
+  
+ Thu Jun 28 2018 23:36:01 GMT-0400 (EDT)
+[debug] [2018-06-29T03:36:01.112Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/976951531853/clients/_:getWebAppConfig  
+  
+ Thu Jun 28 2018 23:36:01 GMT-0400 (EDT)
+[debug] [2018-06-29T03:36:01.685Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-29T03:36:01.685Z] Starting @google-cloud/functions-emulator
+[debug] [2018-06-29T03:36:01.710Z] <<< HTTP RESPONSE 200
+[info] i  hosting: Serving hosting files from: ./
+[info] ✔  hosting: Local server: http://localhost:5000
+
+[debug] [2018-06-29T03:36:03.273Z] Parsing function triggers
+[info] i  functions: No HTTPS functions found. Use firebase functions:shell if you would like to emulate other types of functions.
