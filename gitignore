@@ -3,5 +3,7 @@
 .DS_Store
 
 .web-start/firebase-debug.log
+.firebase-debug.log
+./web-start/firebase-debug.log
 
 **/logs
