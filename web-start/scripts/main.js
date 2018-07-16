@@ -73,14 +73,15 @@ allChat.prototype.loadMessages = function() {
   this.messagesRef = this.database.ref('messages');
   // Make sure we remove all previous listeners.
   this.messagesRef.off();
+  var language = this.languagesSelect.value
 
-  // Loads the last 12 messages and listen for new ones.
+  // Loads the last 3 messages and listen for new ones.
   var setMessage = function(data) {
     var val = data.val();
-    this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl);
+    this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl, language);
   }.bind(this);
-  this.messagesRef.limitToLast(12).on('child_added', setMessage);
-  this.messagesRef.limitToLast(12).on('child_changed', setMessage);
+  this.messagesRef.limitToLast(3).on('child_added', setMessage);
+  this.messagesRef.limitToLast(3).on('child_changed', setMessage);
 };
 
 // Saves a new message on the Firebase DB.
@@ -270,7 +271,7 @@ var MESSAGE_TEMPLATE =
 allChat.LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif';
 
 // Displays a Message in the UI.
-allChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
+allChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri, language) {
   var div = document.getElementById(key);
   // If an element for that message does not exists yet we create it.
   if (!div) {
@@ -285,10 +286,26 @@ allChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
   }
   div.querySelector('.name').textContent = name;
   var messageElement = div.querySelector('.message');
+
+  //TODO: make language code input programmatic
   if (text) { // If the message is text.
-    messageElement.textContent = text;
+    if (this.languagesSelect.value === 'korean') { //ASYNC ISSUE the intital text is empty 
+      this.translate(text, 'ko', this.translateHelper).then(function(response) {
+        console.log("Success!", response);
+        var jsonResponse = JSON.parse(response)
+        messageElement.textContent = jsonResponse[0]["translations"][0]["text"];
+      }, function(error) {
+        console.error("Failed!", error);
+      })
+    } else {
+      messageElement.textContent = text;
+    }
+    console.log('ayyy, what\s text rn?');
+    console.log(text);
+
     // Replace all line breaks by <br>.
-    messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
+    messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>'); 
+
   } else if (imageUri) { // If the message is an image.
     var image = document.createElement('img');
     image.addEventListener('load', function() {
@@ -304,9 +321,49 @@ allChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
   this.messageInput.focus();
 };
 
-// TODO: will eventually translate depending on user's language selection
+// TODO: sets the user's chosen language preference 
 allChat.prototype.changeLanguage = function() {
   console.log("language changed to: " +  this.languagesSelect.value);
+  this.loadMessages();
+}
+
+// TODO: will eventually translate depending on user's language selection
+allChat.prototype.translate = function(text_to_translate, lang_codes) {
+  let subscriptionKey = '262c4088bdf5488c974f0a991e3c54ec';
+
+  // Return a new promise.
+  return new Promise(function(resolve, reject) {
+    let content = JSON.stringify ([{'Text' : text_to_translate}]);
+
+    // Do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    var url = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=ko'
+    req.open('POST', url);
+    req.setRequestHeader('Content-type', 'application/json')
+    req.setRequestHeader('Ocp-Apim-Subscription-Key', subscriptionKey);
+
+    req.onload = function() {
+      // This is called even on 404 etc
+      // so check the status
+      if (req.status == 200) {
+        // Resolve the promise with the response text
+        resolve(req.response);
+      }
+      else {
+        // Otherwise reject with the status text
+        // which will hopefully be a meaningful error
+        reject(Error(req.statusText));
+      }
+    };
+
+    // Handle network errors
+    req.onerror = function() {
+      reject(Error("Network Error"));
+    };
+
+    // Make the request
+    req.send(content);
+  });
 }
 
 // Enables or disables the submit button depending on the values of the input
